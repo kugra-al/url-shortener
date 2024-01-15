@@ -16,7 +16,7 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Laravel'),
+    'name' => env('APP_NAME', 'Laravel Url Shortener'),
 
     /*
     |--------------------------------------------------------------------------
@@ -144,6 +144,16 @@ return [
         // 'store' => 'redis',
     ],
 
+    /* Google API APP
+     *
+     *
+    */
+
+    'google-api-key'            => env('GOOGLE_API_KEY'),
+    'google-safebrowsing-url'   => "https://safebrowsing.googleapis.com/v4/threatMatches:find?key=".env('GOOGLE_API_KEY'),
+    'google-threat-types'       => ['MALWARE', 'SOCIAL_ENGINEERING', 'POTENTIALLY_HARMFUL_APPLICATION', 'UNWANTED_SOFTWARE'],
+    'google-platform-types'     => ['ALL_PLATFORMS'],
+    'google-entry-types'        => ['URL'],
     /*
     |--------------------------------------------------------------------------
     | Autoloaded Service Providers

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Models\Url;
+use App\Jobs\CheckApi;
 
 class UrlController extends Controller
 {
@@ -25,16 +26,19 @@ class UrlController extends Controller
             'url'   =>  'required|max:2000|url'
         ]);
 
-        $exists = Url::where('url', $validatedData['url'])->first();
-        //if ($exists)
-        //    return response()->json($exists, 201);
+        $url = Url::where('url', $validatedData['url'])->first();
+        if (!$url) {
+            $validatedData['hash'] = Str::random(6);
+            $url = Url::create($validatedData);
+            CheckApi::dispatch($url->id, $url->url)->handle();
+            $status = 'Url created';
+        } else
+            $status = 'Url already exists';
 
-        $validatedData['hash'] = Str::random(6);
-
-        $url = Url::create($validatedData);
         return response()->json([
-            'url'   =>  $url->url,
-            'short' =>  'http://127.0.0.1:8000/url/'.$url->hash
+            'url'       =>  $url->url,
+            'short'     =>  'http://127.0.0.1:8000/url/'.$url->hash,
+            'status'    =>  $status
         ], 201);
     }
 
@@ -44,8 +48,9 @@ class UrlController extends Controller
     public function show(string $url)
     {
         $url = Url::where('hash', $url)->first();
-        if ($url)
+        if ($url) {
             return redirect()->to($url->url);
+        }
     }
 
     /**

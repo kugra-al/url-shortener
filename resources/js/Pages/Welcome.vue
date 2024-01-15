@@ -72,7 +72,7 @@ defineProps({
 
                             <button @click="submit()" class="btn btn-success">Submit</button>
                             <span class="text-red-600" v-if="errors?.url">{{ errors.url[0] }}</span>
-                            <span class="text-green-600" v-if="success?.url">{{ success.url }} <a :href="success.short" target="_blank">{{ success.short }}</a></span>
+                            <span class="text-green-600" v-if="success?.url">{{ success.status }} - {{ success.url }} => <a :href="success.short" target="_blank">{{ success.short }}</a></span>
                         </div>
                     </div>
                 </form>
