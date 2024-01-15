@@ -30,7 +30,7 @@ class UrlController extends Controller
         if (!$url) {
             $validatedData['hash'] = Str::random(6);
             $url = Url::create($validatedData);
-            CheckApi::dispatch($url->id, $url->url)->handle();
+            CheckApi::dispatch($url);
             $status = 'Url created';
         } else
             $status = 'Url already exists';
@@ -49,6 +49,13 @@ class UrlController extends Controller
     {
         $url = Url::where('hash', $url)->first();
         if ($url) {
+            if ($url->safe === null) {
+                CheckApi::dispatch($url);
+                dd("Url not checked");
+            }
+            if ($url->safe === 0) {
+                dd("Url is unsafe");
+            }
             return redirect()->to($url->url);
         }
     }

@@ -15,14 +15,12 @@ class CheckApi implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public $urlId;
     public $url;
     /**
      * Create a new job instance.
      */
-    public function __construct($urlId, $url)
+    public function __construct($url)
     {
-        $this->urlId = $urlId;
         $this->url = $url;
     }
 
@@ -31,6 +29,9 @@ class CheckApi implements ShouldQueue
      */
     public function handle(): void
     {
+        if (!$this->url)
+            return;
+
         $payload = [
             'client'    =>  [
                 'clientId'          =>  config('app.name'),
@@ -41,12 +42,17 @@ class CheckApi implements ShouldQueue
                 'platformTypes'     =>  config('app.google-platform-types'),
                 'threatEntryTypes'  =>  config('app.google-entry-types'),
                 'threatEntries'     =>  [
-                    ['url'  =>  $this->url]
+                    ['url'  =>  $this->url->url]
                 ]
             ]
         ];
 
         $request = Http::post(config('app.google-safebrowsing-url'), $payload);
-        dd($request->json());
+        $response = $request->json();
+        if ($response["matches"])
+            $this->url->safe = false;
+        else
+            $this->url->safe = true;
+        $this->url->save();
     }
 }
