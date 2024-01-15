@@ -49,7 +49,7 @@ class CheckApi implements ShouldQueue
 
         $request = Http::post(config('app.google-safebrowsing-url'), $payload);
         $response = $request->json();
-        if ($response["matches"])
+        if (isset($response["matches"]))
             $this->url->safe = false;
         else
             $this->url->safe = true;

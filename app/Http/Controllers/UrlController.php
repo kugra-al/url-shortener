@@ -31,13 +31,15 @@ class UrlController extends Controller
             $validatedData['hash'] = Str::random(6);
             $url = Url::create($validatedData);
             CheckApi::dispatch($url);
-            $status = 'Url created';
+            $status = 'Checking if URL is safe...';
         } else
-            $status = 'Url already exists';
+            $status = 'Short URL already exists: ';
 
         return response()->json([
             'url'       =>  $url->url,
             'short'     =>  'http://127.0.0.1:8000/url/'.$url->hash,
+            'hash'      =>  $url->hash,
+            'safe'      =>  $url->safe,
             'status'    =>  $status
         ], 201);
     }
@@ -74,5 +76,18 @@ class UrlController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function check()
+    {
+        $url = Url::where('hash', request()->get('hash'))->first();
+        if ($url) {
+            return response()->json([
+                'url'       =>  $url->url,
+                'short'     =>  'http://127.0.0.1:8000/url/'.$url->hash,
+                'safe'      =>  $url->safe,
+                'status'    =>  'Url is: '. ($url->safe == 1 ? "safe" : "unsafe")
+            ], 201);
+        }
     }
 }
