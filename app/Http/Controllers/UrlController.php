@@ -26,21 +26,26 @@ class UrlController extends Controller
         ]);
 
         $exists = Url::where('url', $validatedData['url'])->first();
-        if ($exists)
-            return response()->json($exists, 201);
+        //if ($exists)
+        //    return response()->json($exists, 201);
 
         $validatedData['hash'] = Str::random(6);
 
         $url = Url::create($validatedData);
-        return response()->json($url, 201);
+        return response()->json([
+            'url'   =>  $url->url,
+            'short' =>  'http://127.0.0.1:8000/url/'.$url->hash
+        ], 201);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $url)
     {
-        //
+        $url = Url::where('hash', $url)->first();
+        if ($url)
+            return redirect()->to($url->url);
     }
 
     /**

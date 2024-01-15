@@ -69,8 +69,10 @@ defineProps({
                                     placeholder="Submit url.."
                                 >
                             </p>
-                                <button @click="submit()" class="btn btn-success">Submit</button>
 
+                            <button @click="submit()" class="btn btn-success">Submit</button>
+                            <span class="text-red-600" v-if="errors?.url">{{ errors.url[0] }}</span>
+                            <span class="text-green-600" v-if="success?.url">{{ success.url }} <a :href="success.short" target="_blank">{{ success.short }}</a></span>
                         </div>
                     </div>
                 </form>
@@ -102,22 +104,29 @@ defineProps({
         data: function() {
             return {
                 url: "",
-                errors: {}
+                errors: {},
+                success: {}
             }
         },
         methods: {
             submit() {
+                this.errors = {};
+                this.success = {};
                 axios.post('/url', {
-                    url: this.url
+                    url: this.url,
                 })
                 .then(response => {
                     if (response.status == 201) {
                         //this.url = "",
+                        this.success = response.data;
+                        console.log(response);
                         this.$emit("reloadpage");
                     }
                 })
                 .catch(error => {
-                    console.log(error);
+                    if (error.response.status === 422) {
+                        this.errors = error.response.data.errors;
+                    }
                 });
             }
         }
