@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Models\Url;
 use App\Jobs\CheckApi;
+use Inertia\Inertia;
 
 class UrlController extends Controller
 {
@@ -32,9 +33,12 @@ class UrlController extends Controller
             $url = Url::create($validatedData);
             CheckApi::dispatch($url);
             $status = 'Checking if URL is safe...';
-        } else
-            $status = 'Short URL already exists: ';
-
+        } else {
+            if ($url->safe === 1)
+                $status = 'Short URL already exists: ';
+            else
+                $status = 'URL already checked. ';
+        }
         return response()->json([
             'url'       =>  $url->url,
             'short'     =>  'http://127.0.0.1:8000/url/'.$url->hash,
@@ -50,16 +54,13 @@ class UrlController extends Controller
     public function show(string $url)
     {
         $url = Url::where('hash', $url)->first();
-        if ($url) {
-            if ($url->safe === null) {
-                CheckApi::dispatch($url);
-                dd("Url not checked");
-            }
-            if ($url->safe === 0) {
-                dd("Url is unsafe");
-            }
-            return redirect()->to($url->url);
-        }
+        if ($url)
+            return Inertia::render('Forward', [
+                'safe'      => ($url->safe ? true : false),
+                'short'     => 'http://127.0.0.1:8000/url/'.$url->hash,
+                'url'       => $url->url
+            ]);
+        return Inertia::render('Forward', []);
     }
 
     /**
@@ -86,7 +87,7 @@ class UrlController extends Controller
                 'url'       =>  $url->url,
                 'short'     =>  'http://127.0.0.1:8000/url/'.$url->hash,
                 'safe'      =>  $url->safe,
-                'status'    =>  'Url is: '. ($url->safe == 1 ? "safe" : "unsafe")
+                'status'    =>  ($url->save == 1 ? 'Short URL created. ' : '')
             ], 201);
         }
     }

@@ -19,10 +19,8 @@ use App\Http\Controllers\UrlController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
+        'canLogin' => true,
+        'canRegister' => false,
     ]);
 });
 

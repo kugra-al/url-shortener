@@ -8,14 +8,6 @@ defineProps({
     canRegister: {
         type: Boolean,
     },
-    laravelVersion: {
-        type: String,
-        required: true,
-    },
-    phpVersion: {
-        type: String,
-        required: true,
-    },
 });
 
 </script>
@@ -65,9 +57,9 @@ defineProps({
 
                 <div class="w-full block text-red-600">
                     <span v-if="errors?.url">{{ errors.url[0] }}</span>
-                    <span class="text-blue-600" v-if="success?.url">{{ success.status }}
-                        <span class="text-green-600" v-if="success.safe == 1"> <a :href="success.short" target="_blank">{{ success.short }}</a></span>
-                        <span class="text-red-600" v-else-if="success.safe == 0">Unsafe URL</span>
+                    <span class="text-white" v-if="success?.url">{{ success.status }}
+                        <span class="text-green-600" v-if="success.safe == 1">URL is safe: <a class="text-blue-600" :href="success.short" target="_blank">{{ success.short }}</a></span>
+                        <span class="text-red-600" v-else-if="success.safe == 0">URL is unsafe</span>
                     </span>
                 </div>
             </div>
@@ -98,8 +90,8 @@ defineProps({
                         //this.url = "",
                         this.success = response.data;
                         this.hash = response.data.hash;
-                        if (!response.data.safe) {
-                            setTimeout(()=>{this.check();},2000);
+                        if (response.data.safe == null) {
+                            setTimeout(()=>{this.check();},1000);
                         }
                     }
                 })
@@ -119,7 +111,7 @@ defineProps({
                 .then(response => {
                     if (response.status == 201) {
                         if (response.data.safe == null) {
-                            setTimeout(()=>{this.check();},3000);
+                            setTimeout(()=>{this.check();},2000);
                             this.success.status = this.success.status + ".";
                         }
                         else {
