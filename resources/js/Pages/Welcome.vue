@@ -58,7 +58,7 @@ defineProps({
                 <div class="w-full block text-red-600">
                     <span v-if="errors?.url">{{ errors.url[0] }}</span>
                     <span class="text-white" v-if="success?.url">{{ success.status }}
-                        <span class="text-green-600" v-if="success.safe == 1">URL is safe: <a class="text-blue-600" :href="success.short" target="_blank">{{ success.short }}</a></span>
+                        <span class="text-green-600" v-if="success.safe == 1">URL is safe: <a class="text-blue-600" :href="success.short" target="_blank">{{route('url.show', success.hash)}}</a></span>
                         <span class="text-red-600" v-else-if="success.safe == 0">URL is unsafe</span>
                     </span>
                 </div>

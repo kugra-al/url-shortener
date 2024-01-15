@@ -41,7 +41,7 @@ class UrlController extends Controller
         }
         return response()->json([
             'url'       =>  $url->url,
-            'short'     =>  'http://127.0.0.1:8000/url/'.$url->hash,
+            'short'     =>  "/url/".$url->hash,
             'hash'      =>  $url->hash,
             'safe'      =>  $url->safe,
             'status'    =>  $status
@@ -57,7 +57,7 @@ class UrlController extends Controller
         if ($url)
             return Inertia::render('Forward', [
                 'safe'      => ($url->safe ? true : false),
-                'short'     => 'http://127.0.0.1:8000/url/'.$url->hash,
+                'short'     => "/url/".$url->hash,
                 'url'       => $url->url
             ]);
         return Inertia::render('Forward', []);
@@ -85,7 +85,8 @@ class UrlController extends Controller
         if ($url) {
             return response()->json([
                 'url'       =>  $url->url,
-                'short'     =>  'http://127.0.0.1:8000/url/'.$url->hash,
+                'short'     =>  "/url/".$url->hash,
+                'hash'      =>  $url->hash,
                 'safe'      =>  $url->safe,
                 'status'    =>  ($url->save == 1 ? 'Short URL created. ' : '')
             ], 201);

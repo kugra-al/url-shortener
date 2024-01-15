@@ -35,7 +35,7 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::post('/url', [UrlController::class, 'store']);
-Route::get('/url/{url}', [UrlController::class, 'show']);
+Route::get('/url/{url}', [UrlController::class, 'show'])->name('url.show');
 Route::post('/url/check', [UrlController::class, 'check']);
 
 require __DIR__.'/auth.php';
