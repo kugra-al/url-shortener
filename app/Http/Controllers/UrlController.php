@@ -29,7 +29,12 @@ class UrlController extends Controller
 
         $url = Url::where('url', $validatedData['url'])->first();
         if (!$url) {
-            $validatedData['hash'] = Str::random(6);
+            $unique = false;
+            while ($unique == false) {
+                $validatedData['hash'] = Str::random(6);
+                if (!Url::where('hash',$validatedData['hash'])->exists())
+                    $unique = true;
+            }
             $url = Url::create($validatedData);
             CheckApi::dispatch($url);
             $status = 'Checking if URL is safe...';
@@ -41,7 +46,7 @@ class UrlController extends Controller
         }
         return response()->json([
             'url'       =>  $url->url,
-            'short'     =>  "/url/".$url->hash,
+            'short'     =>  route("url.show", $url->hash),
             'hash'      =>  $url->hash,
             'safe'      =>  $url->safe,
             'status'    =>  $status
@@ -57,7 +62,7 @@ class UrlController extends Controller
         if ($url)
             return Inertia::render('Forward', [
                 'safe'      => ($url->safe ? true : false),
-                'short'     => "/url/".$url->hash,
+                'short'     => route("url.show", $url->hash),
                 'url'       => $url->url
             ]);
         return Inertia::render('Forward', []);
@@ -85,11 +90,11 @@ class UrlController extends Controller
         if ($url) {
             return response()->json([
                 'url'       =>  $url->url,
-                'short'     =>  "/url/".$url->hash,
+                'short'     =>  route("url.show", $url->hash),
                 'hash'      =>  $url->hash,
                 'safe'      =>  $url->safe,
-                'status'    =>  ($url->save == 1 ? 'Short URL created. ' : '')
-            ], 201);
+                'status'    =>  ($url->safe == 1 ? 'Short URL created. ' : '')
+            ], 200);
         }
     }
 }

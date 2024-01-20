@@ -87,7 +87,6 @@ defineProps({
                 })
                 .then(response => {
                     if (response.status == 201) {
-                        //this.url = "",
                         this.success = response.data;
                         this.hash = response.data.hash;
                         if (response.data.safe == null) {
@@ -103,13 +102,11 @@ defineProps({
                 });
             },
             check() {
-                //this.errors = {};
-                //this.success = {};
                 axios.post('/url/check', {
                     hash: this.hash
                 })
                 .then(response => {
-                    if (response.status == 201) {
+                    if (response.status == 200) {
                         if (response.data.safe == null) {
                             setTimeout(()=>{this.check();},2000);
                             this.success.status = this.success.status + ".";
