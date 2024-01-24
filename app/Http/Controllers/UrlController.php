@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Models\Url;
 use App\Jobs\CheckApi;
+use App\Events\UrlChecked;
+
 use Inertia\Inertia;
 
 class UrlController extends Controller
@@ -32,10 +34,11 @@ class UrlController extends Controller
             $unique = false;
             while ($unique == false) {
                 $validatedData['hash'] = Str::random(6);
-                if (!Url::where('hash',$validatedData['hash'])->exists())
+                if (!Url::where('hash', $validatedData['hash'])->exists())
                     $unique = true;
             }
             $url = Url::create($validatedData);
+            event(new UrlChecked($url->url));
             CheckApi::dispatch($url);
             $status = 'Checking if URL is safe...';
         } else {

@@ -121,6 +121,12 @@ defineProps({
                     this.errors = error.response.data.errors;
                 });
             }
+        },
+        mounted() {
+            window.Echo.channel('url-checker')
+            .listen('.UrlChecked', (e) => {
+                console.log(e);
+            })
         }
     };
 </script>
